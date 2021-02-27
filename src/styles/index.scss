@@ -4,10 +4,15 @@
 
 body {
   margin: 0;
+  background: black;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+button {
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
 @font-face {
   font-family: 'San Francisco';
   font-weight: 400;

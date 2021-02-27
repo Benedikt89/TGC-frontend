@@ -1,6 +1,13 @@
 import styled from 'styled-components';
+import city from "../images/city.png";
+import playerBackground from "../images/player-bg.png";
 
 // export const CtaButton = styled.h1<ICtaButton>`
+export const ColumnDiv = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
 export const LayoutWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -10,6 +17,23 @@ export const LayoutWrapper = styled.div`
   margin: 0 auto;
   padding: 0 20px;
 `;
+
+type BackGroundImagePropsType = { topImgUrl: string, downImgUrl: string } | undefined;
+
+export const BackGroundImage = styled.div
+    .attrs((props: BackGroundImagePropsType) => ({
+        topImgUrl: props && props.topImgUrl ? props.topImgUrl : playerBackground,
+        downImgUrl: props && props.downImgUrl ? props.downImgUrl : city,
+    }))`
+  min-height: 1360px;
+  width: 100%;
+  background-color: #000;
+  background: url(${props => props.downImgUrl}), url(${props => props.topImgUrl});
+  background-position: right bottom, left top;
+  background-size: contain, cover;
+  background-repeat: no-repeat;
+`;
+
 
 export const SimpleButton = styled.button`
   color: #fff;
@@ -23,14 +47,23 @@ export const SimpleButton = styled.button`
   }
 `;
 
-export const CtaButton = styled.button`
+export const BasicButton = styled.button`
+    padding: 11px 36px;
+    color: #ffffff;
+    border: none;
+    font-size: 16px;
+      line-height: 19px;
+      border-radius: 8px;
+      
+  &:hover {
+    cursor: pointer;
+    color: #d3d3d3;
+  }
+`;
+
+export const CtaButton = styled(BasicButton)`
   padding: 11px 36px;
   background: #B2212B;
-  color: #fff;
-  border: none;
-  font-size: 16px;
-  line-height: 19px;
-  border-radius: 8px;
   
   &:hover {
     cursor: pointer;

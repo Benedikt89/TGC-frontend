@@ -13,6 +13,7 @@ export interface ITableRow {
     label: string;
     date: string;
   },
+  ranking: number,
   prize: string;
   teamSize: number | null;
   registrationInfo: {

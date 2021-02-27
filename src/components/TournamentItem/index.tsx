@@ -1,9 +1,10 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { CtaButton, Paragraph } from '../../styles/mixins';
-import { ITableRow } from '../Tournament/types';
+import {CtaButton, Paragraph} from '../../styles/mixins';
+import {ITableRow} from '../Tournament/types';
 import gameModeIcon from '../../images/game-mode.svg';
-import { IStatus } from '../Tournament/types';
+import awardIcon from '../../images/award-medal.svg';
+import {IStatus} from '../Tournament/types';
 import australiaFlag from '../../images/australia-flag-square.svg';
 import trophyFlag from '../../images/trophy-transparent.svg';
 import rectangular from '../../images/rectangular.svg';
@@ -41,11 +42,11 @@ const TournamentCellPrize = styled(TournamentCell)`
   flex-basis: 11%;
 `;
 
-const TournamentCellTeamSize = styled(TournamentCell)<{ teamSize: number | null }>`
+const TournamentCellTeamSize = styled(TournamentCell)<{ teamSize: number | null | string }>`
   flex-basis: 12%;
 
   &::after {
-    content: ${({ teamSize }) => teamSize ? `url(${rectangular})` : 'none'};
+    content: ${({teamSize}) => teamSize ? `url(${typeof teamSize === 'string' ? teamSize : rectangular})` : 'none'};
     display: inline-block;
     margin-left: 6px;
     height: 14px;
@@ -94,12 +95,12 @@ const StatusBadge = styled.div`
   margin-right: 7px;
 `;
 
-const StatusIndicator = styled.span<{status: string}>`
+const StatusIndicator = styled.span<{ status: string }>`
   display: inline-block;
   margin-right: 4px;
   width: 8px;
   height: 8px;
-  background: ${({ status }) => status === 'closed' ? '#5A5A5A' : status === 'completed' ? '#FACB27' :  status === 'live' ? '#DB4C4C' : '#249937'};
+  background: ${({status}) => status === 'closed' ? '#5A5A5A' : status === 'completed' ? '#FACB27' : status === 'live' ? '#DB4C4C' : '#249937'};
   border-radius: 50%;
 `;
 
@@ -110,18 +111,18 @@ const TournamentTimelineButton = styled(CtaButton)<IStatus>`
   padding: 10px 11px;
   font-size: 12px;
   line-height: 14px;
-  background-color: ${({ status }) => status === 'closed' || status === 'completed' ? '#232323' : status === 'live' ? '#C18A23' : '#8D1C1C'};
-  color: ${({ status, showIcons }) => showIcons ? '#fff' : status === 'closed' || status === 'completed' ? '#656565' : '#fff'};
+  background-color: ${({status}) => status === 'closed' || status === 'completed' ? '#232323' : status === 'live' ? '#C18A23' : '#8D1C1C'};
+  color: ${({status, showIcons}) => showIcons ? '#fff' : status === 'closed' || status === 'completed' ? '#656565' : '#fff'};
 
   &::before {
-    content: ${({ showIcons }) => showIcons ? `url(${trophyFlag})` : 'none'};
+    content: ${({showIcons}) => showIcons ? `url(${trophyFlag})` : 'none'};
     display: inline-block;
     margin-right: 6px;
     height: 14px;
   }
 
   &::after {
-    content: ${({ showIcons }) => showIcons ? `url(${australiaFlag})` : 'none'};
+    content: ${({showIcons}) => showIcons ? `url(${australiaFlag})` : 'none'};
     display: inline-block;
     margin-left: 6px;
     height: 14px;
@@ -136,31 +137,50 @@ const TournamentTimeline = styled.span`
   font-family: 'San Francisco', Arial, sans-serif;
 `;
 
-const TournamentItem = ({
-  status: tournamentStatus,
-  tournament: { name, label, date },
-  prize,
-  teamSize,
-  registrationInfo: { status, timeline, showIcons  }
-}: ITableRow) => {
-  return (
-    <TournamentRow>
-      <TournamentCellGameMode><img src={gameModeIcon} alt="game mode" /></TournamentCellGameMode>
-      <TournamentCellInfo>
-        <TournamentName>{name}</TournamentName>
-        <StatusWrapper>
-          <StatusBadge><StatusIndicator status={tournamentStatus} />{tournamentStatus === 'live' ? 'live' : label}</StatusBadge>
-          <TournamentDate>{date}</TournamentDate>
-        </StatusWrapper>
-      </TournamentCellInfo>
-      <TournamentCellPrize>{prize}</TournamentCellPrize>
-      <TournamentCellTeamSize teamSize={teamSize}>{teamSize || '-'}</TournamentCellTeamSize>
-      <TournamentCellStatus>
-        <TournamentTimelineButton status={tournamentStatus} showIcons={showIcons}>{status}</TournamentTimelineButton>
-        <TournamentTimeline>{timeline}</TournamentTimeline>
-      </TournamentCellStatus>
-    </TournamentRow>
-  );
+
+interface TournamentProps extends ITableRow {
+    order: Array<keyof ITableRow>
 }
+
+const TournamentItem = ({
+                            status: tournamentStatus,
+                            tournament: {name, label, date},
+                            prize,
+                            teamSize,
+                            registrationInfo: {status, timeline, showIcons},
+                            order,
+                            ranking
+                        }: TournamentProps) => {
+    return (
+        <TournamentRow>
+            <TournamentCellGameMode><img src={gameModeIcon} alt="game mode"/></TournamentCellGameMode>
+            {order.map(key => key === 'tournament'
+                ? <TournamentCellInfo key={key}>
+                    <TournamentName>{name}</TournamentName>
+                    <StatusWrapper>
+                        <StatusBadge><StatusIndicator
+                            status={tournamentStatus}/>{tournamentStatus === 'live' ? 'live' : label}</StatusBadge>
+                        <TournamentDate>{date}</TournamentDate>
+                    </StatusWrapper>
+                </TournamentCellInfo>
+                : key === 'prize'
+                    ? <TournamentCellPrize key={key}>{prize}</TournamentCellPrize>
+                    : key === 'teamSize'
+                        ? <TournamentCellTeamSize  key={key} teamSize={teamSize}>{teamSize || '-'}</TournamentCellTeamSize>
+                        : key === 'registrationInfo'
+                            ? <TournamentCellStatus key={key}>
+                                <TournamentTimelineButton status={tournamentStatus}
+                                                          showIcons={showIcons}>{status}</TournamentTimelineButton>
+                                <TournamentTimeline>{timeline}</TournamentTimeline>
+                            </TournamentCellStatus>
+                            : key === 'ranking'
+                                ? <TournamentCellTeamSize key={key} teamSize={ranking === 1 ? awardIcon : null}>
+                                    {'#' + ranking || '-'}
+                            </TournamentCellTeamSize>
+                                : null
+            )}
+        </TournamentRow>
+    );
+};
 
 export default TournamentItem;

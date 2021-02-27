@@ -1,14 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { LayoutWrapper, HeadingH2 } from '../../styles/mixins';
 import TournamentItem from '../TournamentItem';
-import { ITableRow } from './types';
-import { mockedTableData } from './mockedData';
-
-const StyledDescription = styled.div`
-  padding: 70px 0;
-  background: #000;
-`;
+import {IMockedTableData, ITableRow} from './types';
 
 const TournamentTable = styled.div`
   width: 100%;
@@ -56,27 +49,25 @@ const TournamentTableHeadItem = styled.div`
   }
 `;
 
-const MainBannerWrapper = styled(LayoutWrapper)`
-  flex-direction: column;
-`;
+interface TournamentProps extends IMockedTableData {
+    order?: Array<keyof ITableRow>
+}
 
-const Tournament: React.FC = () => {
-  const { tableHead, tableBody } = mockedTableData;
+const Tournament: React.FC<TournamentProps> = ({ tableHead, tableBody, order }: TournamentProps) => {
   return (
-    <StyledDescription>
-      <MainBannerWrapper>
-        <HeadingH2>Tournament List</HeadingH2>
         <TournamentTable>
           <TournamentTableHead>
-            {tableHead.map((item, i) => <TournamentTableHeadItem key={i}>{item}</TournamentTableHeadItem>)}
+            {tableHead.map((item, i) =>
+                <TournamentTableHeadItem key={i}>{item}</TournamentTableHeadItem>)}
           </TournamentTableHead>
           <TournamentTableBody>
-            {tableBody.map((tournamentData: ITableRow, id) => <TournamentItem key={id} {...tournamentData} />)}
+            {tableBody.map((tournamentData: ITableRow, id) =>
+                <TournamentItem key={id} {...tournamentData}
+                                order={order ? order : ['tournament','prize','teamSize','registrationInfo']}
+                />)}
           </TournamentTableBody>
         </TournamentTable>
-      </MainBannerWrapper>
-    </StyledDescription>
   );
-}
+};
 
 export default Tournament;
